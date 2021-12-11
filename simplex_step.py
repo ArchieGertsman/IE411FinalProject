@@ -13,28 +13,31 @@ def simplex_step(A, B_inv, b_bar, c, iB, rule):
 
     if best_cost <= 0:
         # at optimal solution
-        return (-1, iB, b_bar, B_inv)
+        return (-1, iB, b_bar, B_inv, z[0,0])
 
     y = B_inv @ A[:, best_cost_idx]
     indices = np.argwhere(y > 0).reshape(-1)
     if len(indices) == 0:
         # unbounded
-        return (16, iB, b_bar, B_inv)
+        return (16, iB, b_bar, B_inv, np.inf)
 
     ratios = b_bar[indices] / y[indices]
     min_ratio_idx = indices[ratios.argmin()]
 
+    b_bar = b_bar[:,None]
+    y = y[:,None]
     tableau = np.vstack((
         np.hstack([  w  ,   z  , best_cost]),
-        np.hstack([B_inv, b_bar[:,None],     y[:,None]    ])
+        np.hstack([B_inv, b_bar,     y    ])
     ))
     tableau = pivot(tableau, min_ratio_idx+1)
     
     iB[min_ratio_idx] = best_cost_idx
     b_bar = tableau[1:,-2]
     B_inv = tableau[1:, :b_bar.size]
+    z = tableau[0, w.size]
 
-    return (0, iB, b_bar, B_inv)
+    return (0, iB, b_bar, B_inv, z)
 
 
 
