@@ -13,7 +13,7 @@ def simplex_step(A, B_inv, b_bar, c, iB, rule):
 
     if best_cost <= 0:
         # at optimal solution
-        return (-1, iB, b_bar, B_inv, z[0,0])
+        return (-1, iB, b_bar, B_inv, z)
 
     y = B_inv @ A[:, best_cost_idx]
     indices = np.argwhere(y > 0).reshape(-1)
@@ -34,7 +34,8 @@ def simplex_step(A, B_inv, b_bar, c, iB, rule):
     
     iB[min_ratio_idx] = best_cost_idx
     b_bar = tableau[1:,-2]
-    B_inv = tableau[1:, :b_bar.size]
+    b_bar = np.squeeze(np.asarray(b_bar))
+    B_inv = np.asarray(tableau[1:, :b_bar.size])
     z = tableau[0, w.size]
 
     return (0, iB, b_bar, B_inv, z)
