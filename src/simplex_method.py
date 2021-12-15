@@ -2,6 +2,8 @@ from simplex_step import simplex_step
 import simplex_init
 import numpy as np
 
+# In simplex method we call simplex_Init and _use simplex_step from simplex_step
+# This code relies on previous functions
 
 def simplex_method(A, b, c, rule, B_inv=None, iB=None):
     if B_inv is None:
