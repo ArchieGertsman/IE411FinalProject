@@ -1,7 +1,9 @@
 import simplex_method
 from simplex_step import pivot
 import numpy as np
+# Our simplex_init code implements handling of ariticial variables in bias 
 
+# initially we define simplex_init and what input parameter it takes
 def simplex_init(A, b, rule):
     m,n = A.shape
     A1 = np.hstack((A, np.eye(m)))
