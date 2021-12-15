@@ -1,4 +1,4 @@
-from simplex_method import simplex_method
+import simplex_method
 from simplex_step import pivot
 import numpy as np
 
@@ -6,18 +6,14 @@ def simplex_init(A, b, rule):
     m,n = A.shape
     A1 = np.hstack((A, np.eye(m)))
     c = np.hstack((np.zeros(n), np.ones(m)))
-    c = np.matrix(c)
+    c = c.reshape((1,) + c.shape)
     B_inv = np.eye(m)
     iB = n + np.arange(m)
 
     # perform the simplex method on the phase I LP
     # containing artificial variables
-    status, x, _, iB, b_bar, B_inv = \
-        simplex_method(A1, b, c, rule, B_inv, iB)
-
-    if status == 16:
-        # failed to initialize
-        return (4,) + (None)*5
+    _, x, _, iB, b_bar, B_inv = \
+        simplex_method.simplex_method(A1, b, c, rule, B_inv, iB)
 
     # indices of artificial basic variables
     iB_artificial = iB[iB >= n]
@@ -29,7 +25,7 @@ def simplex_init(A, b, rule):
     iB_artificial_values = x[iB_artificial]
     if iB_artificial_values[iB_artificial_values > 0].size > 0:
         # infeasible
-        return (16,) + (None)*5
+        return (16,) + (None,)*5
 
     # artificial variables are still in the basis
     # at zero level

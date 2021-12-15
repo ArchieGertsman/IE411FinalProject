@@ -11,53 +11,29 @@ Created on Wed Nov  8 16:04:29 2017
 import numpy as np
 from numpy.linalg import norm
 
-def simplex_test(A,b,c,iB,xB):
-
-    iB = [i-1 for i in iB]
-        
-    [m,n] = A.shape
+def simplex_test(A, b, c, iB, xB):
+    n = A.shape[1]
     eps = 1.0e-12
     
-    X=[]
-    eta=[]
-    isfeasible=[]
-    isoptimal=[]
-    
-    X = np.zeros((n,1))
+    X = np.zeros(n)
     X[iB] = xB
     eta=c*X
 
-    err = norm(A*X-b)
+    err = norm(A@X-b)
   
     isfeasible = 0
     if (err < eps) and min(X) >= -eps:
         isfeasible = 1
         
-        
-    temp = list(range(n))
-    iN = []
-    for each in temp:
-        if each not in iB:
-            iN.append(each)
+    iN = np.arange(A.shape[1])
+    iN = iN[np.isin(iN, iB, invert=True)]
     
     Cb = c[:,iB]  
     Cn = c[:,iN] 
     B = A[:,iB]
-    N = A[:,iN]
     
-    Binv = B.I
+    Binv = np.linalg.inv(B)
     
-    ctilde = []
-    for i in range(len(iN)):
-        ctilde.append(Cn[:,i] - Cb * Binv * A[:,iN[i]])
-    
-    if not (min(ctilde) >= -eps):
-        isoptimal = 0
-        
-    else:
-        isoptimal = 1
-        
-    zN = ctilde
-
-
-    return [X,eta,isfeasible,isoptimal,zN]
+    ctilde = (Cn - Cb @ Binv @ A[:,iN]).reshape(-1)
+    isoptimal = int(min(ctilde) >= -eps)
+    return (X, eta, isfeasible, isoptimal, ctilde)

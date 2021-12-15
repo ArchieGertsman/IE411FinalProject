@@ -11,49 +11,44 @@ Created on Mon Nov  6 21:39:46 2017
 # step correctly.  This script uses a simple Tableau form.
 #
 # indices of iB, iN start with 1
+import sys
+sys.path.append('../src/')
 
 import numpy as np
 from numpy.linalg import norm
 from simplex_step import simplex_step
 
 # start with a Tableau form
-A1 = np.matrix([[1, 1,  1],
-                [1, 1, -1],
-                [1, 1,  0]],dtype = np.float64)
+A = np.array([
+   [1, 1,  1],
+   [1, 1, -1],
+   [1, 1,  0]],
+   dtype=np.float64)
+A = np.hstack((np.eye(3), A))
+B_inv = np.eye(3)
 
-A = np.hstack((np.eye(3),A1))
+b = np.array([1,2,3], dtype=np.float64)     
 
-b = np.matrix([[1],
-               [2],
-               [3]],dtype = np.float64)
-              
-
-iB = [1,2,3]
-iN = [4,5,6]
-xB = np.matrix(np.copy(b))
-c  = np.matrix([[0,0,0,-1,2,1]],dtype = np.float64)
+iB = np.arange(3)
+xB = b.copy()
+c  = np.array([[0,0,0,-1,2,1]], dtype=np.float64)
 
 
 # test a step in this extremely simple state
-irule = 0
-[istatus,iB,iN,xB] = simplex_step(A,b,c,iB,iN,xB,irule)
+status, iB, xB, _, _ = \
+   simplex_step(A, B_inv, xB, c, iB, rule=0)
 
 
-X = np.zeros((6,1),dtype = np.float64)
-X[[(b-1) for b in iB]] = xB
+X = np.zeros(6, dtype=np.float64)
+X[iB] = xB
 
-if (istatus != 0):
+if (status != 0):
    print('INCORRECT ISTATUS!\n')
    
-if (norm(X-np.matrix([[0],[1],[2],[1],[0],[0]])) > 1e-10):
+if (norm(X-np.array([0,1,2,1,0,0])) > 1e-10):
    print('INCORRECT STEP!\n')
 
-
-if (norm(np.array(sorted(iN))-np.array([1, 5, 6])) > 1e-10):
-   print('iN incorrect!\n')
-
-
-if (norm(np.array(sorted(iB))-np.array([2, 3, 4])) > 1e-10):
+if (norm(np.array(sorted(iB))-np.array([1,2,3])) > 1e-10):
    print('iB incorrect!\n')
 
 

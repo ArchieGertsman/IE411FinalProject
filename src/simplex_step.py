@@ -26,6 +26,8 @@ def simplex_step(A, B_inv, b_bar, c, iB, rule):
 
     b_bar = b_bar[:,None]
     y = y[:,None]
+    z = z[:,None]
+    best_cost = best_cost[:,None]
     tableau = np.vstack((
         np.hstack([  w  ,   z  , best_cost]),
         np.hstack([B_inv, b_bar,     y    ])
@@ -46,7 +48,7 @@ def pivot(tableau, idx):
     # create a 1 in the last column of the pivot row
     tableau[idx] /= tableau[idx, -1]
 
-    multipliers = tableau[:,-1].reshape(-1,1)
+    multipliers = tableau[:,-1].reshape(-1,1).copy()
 
     # so that pivot row is not modified in next operation
     multipliers[idx] = 0.
@@ -64,7 +66,7 @@ def select_pivot(neg_reduced_costs, rule):
         c_best = neg_reduced_costs[:,c_best_idx]
     else:
         # Bland's rule
-        indices = np.argwhere(neg_reduced_costs > 0)
+        indices = np.argwhere(neg_reduced_costs > 0)[:,-1]
         if len(indices) > 0:
             c_best_idx = indices[0]
             c_best = neg_reduced_costs[:,c_best_idx]
