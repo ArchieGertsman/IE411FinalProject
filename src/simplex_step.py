@@ -75,20 +75,3 @@ def select_pivot(neg_reduced_costs, rule):
             c_best = 0
 
     return (c_best_idx, c_best)
-
-
-
-
-if __name__ == "__main__":
-    A = np.array([
-        [1, 1,  1],
-        [1, 1, -1],
-        [1, 1,  0]],
-        dtype = np.float64)
-    A = np.hstack((np.eye(3),A))
-    B_inv = np.eye(3)
-    b_bar = np.array([1,2,3], dtype=np.float64)
-    c  = np.matrix([[0,0,0,-1,2,1]], dtype=np.float64)
-    iB = [0,1,2]
-
-    print(simplex_step(A, B_inv, b_bar, c, iB, rule=0))

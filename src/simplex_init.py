@@ -91,7 +91,3 @@ def __delete_redundant_rows(tableau, A, b, iB):
     tableau = np.delete(tableau, artificial_indices, 1)
     iB = np.delete(iB, artificial_indices, 0)
     return (tableau, A, b, iB)
-
-
-if __name__ == "__main__":
-    pass
